@@ -1,0 +1,17 @@
+body {
+    margin: 0;
+    border: 3px solid #dadada;
+    border-radius: 10px;
+
+    width: calc(100vw - 6px);
+    height: calc(100vw - 6px);
+}
+
+#optionsList {
+    width: calc(100vw - 26px);
+    height: calc(100vw - 26px);
+    margin: 0;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #ffffff;
+}

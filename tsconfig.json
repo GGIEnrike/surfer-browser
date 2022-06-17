@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"]
+    },
+    "lib": [
+      "ES2021.String",
+      "DOM"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
