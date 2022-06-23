@@ -45,6 +45,6 @@ export class Window {
             })
         }
 
-        this.win.webContents.send('setTheme', 'dark')
+        this.win.webContents.send('setTheme', 'light')
     }
 }

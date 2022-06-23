@@ -6,7 +6,7 @@ const searchBar = <HTMLInputElement>document.getElementById('searchBar')
 const titleBar = document.getElementById('tabBar')
 const nonDoubleClickableElements = document.querySelectorAll('.barButton, #searchBar');
 
-document.documentElement.setAttribute('data-theme', 'dark')
+document.documentElement.setAttribute('data-theme', 'light')
 
 window.api.handleRemoveLeftMargin(() => {
     backButton.style.marginLeft = '10px'

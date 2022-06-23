@@ -1,4 +1,4 @@
-import { app, BrowserView, ipcMain, nativeTheme } from "electron"
+import { app, BrowserView, ipcMain, nativeTheme, systemPreferences } from "electron"
 
 import { Window } from "./Window"
 import { View } from "./View"
@@ -22,12 +22,12 @@ app.on("ready", () => {
 
     app.userAgentFallback = newUserAgent
 
-    const win = new Window(800, 600, true)
+    const win = new Window(800, 600, false)
     const view = new View(800, 600, 38, win.win)
     
     // const settingsDropdown = new OverlayView(600, 35, 190, 350, '../pages/settings.html', 'toggleSettings', win.win, view.view)
 
-    nativeTheme.themeSource = 'dark'
+    nativeTheme.themeSource = 'light'
 
     // UNCOMMENT IN PRODUCTION! This is a useful feature for users in production,
     // but an annoying thing for me in development

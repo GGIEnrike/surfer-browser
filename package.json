@@ -8,14 +8,24 @@
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "start": "npm run build && electron ./dist/main.js",
-    "run": "electron ./dist/main.js"
+    "run": "electron ./dist/main.js",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder"
   },
+  "build": {
+    "appId": "com.electron.surfer-browser",
+    "mac": {
+      "category": "your.app.category.type"
+    }
+  },
+  "main": "./dist/main.js",
   "author": "Enrike Churin",
   "license": "MIT",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "electron": "^19.0.4",
+    "electron-builder": "^23.1.0",
     "eslint": "^7.32.0",
     "typescript": "^4.7.3"
   },

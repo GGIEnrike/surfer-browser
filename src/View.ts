@@ -22,9 +22,11 @@ export class View {
         this.view.setBounds({ x: 0, y: tabHeight, width: width, height: height - tabHeight })
         this.view.setAutoResize({width: true, height: true})
         this.view.webContents.setVisualZoomLevelLimits(1, 3)
-        this.view.webContents.loadURL('https://google.com')
         // this.view.webContents.openDevTools()
-
+        
+        this.view.webContents.loadURL('https://google.com/')
+        let homePage = true
+        
         this.view.webContents.setWindowOpenHandler((details: any) => {
             // Do stuff: open a new tab, navigate current tab, etc.
             this.view.webContents.loadURL(details.url)
@@ -34,18 +36,21 @@ export class View {
         this.view.webContents.on('did-fail-load', () => {
             console.log('failed loading the page!')
         })
-
+        
         this.view.webContents.on('enter-html-full-screen', () => {
             const { width: w, height: h } = win.getBounds()
             this.view.setBounds({ x: 0, y: 0, width: w, height: h })
         })
-
+        
         this.view.webContents.on('leave-html-full-screen', () => {
             const { width: w, height: h } = win.getBounds()
             this.view.setBounds({ x: 0, y: tabHeight, width: w, height: h - tabHeight })
         })
-
+        
         const updateSearchBar = (_ev: any, url: string) => {
+            if (homePage) {
+                return
+            }
             let text: string
             if (typeof url === undefined) {
                 return
@@ -76,6 +81,10 @@ export class View {
         })
         // this.view.webContents.on('did-finish-load', updateSearchBar)
 
+        this.view.webContents.once('did-finish-load', () => {
+            homePage = false
+        })
+        
         this.view.webContents.on('did-finish-load', () => {
             this.view.webContents.setVisualZoomLevelLimits(1, 3)
         })
