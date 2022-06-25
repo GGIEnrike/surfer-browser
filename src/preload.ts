@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer } from "electron"
 
 contextBridge.exposeInMainWorld('api', {
 
@@ -13,7 +13,7 @@ contextBridge.exposeInMainWorld('api', {
     backButtonPressed: () => ipcRenderer.send('goBack'),
     forwardButtonPressed: () => ipcRenderer.send('goForward'),
     refreshButtonPressed: () => ipcRenderer.send('refreshPage'),
-    settingsButtonPressed: () => ipcRenderer.send('toggleSettings'),
+    lockButtonPressed: () => ipcRenderer.send('lockButtonPressed'),
 
     handleCanGoBack: (callback: any) => ipcRenderer.on('canGoBack', callback),
     handleCanGoForward: (callback: any) => ipcRenderer.on('canGoForward', callback),

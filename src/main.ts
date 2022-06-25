@@ -2,11 +2,10 @@ import { app, BrowserView, ipcMain, nativeTheme, systemPreferences } from "elect
 
 import { Window } from "./Window"
 import { View } from "./View"
-import { OverlayView } from "./OverlayView"
 
 declare global {
     interface Window {
-        api?: any;
+        api?: any
     }
 }
 
@@ -16,9 +15,12 @@ app.on("ready", () => {
 
     const userAgent = new BrowserView().webContents.getUserAgent()
 
-    let agentVersion = userAgent.substring(userAgent.indexOf('Surfer/'))
-    agentVersion = agentVersion.substring(0, agentVersion.indexOf(' '))
-    const newUserAgent = userAgent.replace(agentVersion, 'Surfer/0.1.0')
+    let surferVersion = userAgent.substring(userAgent.indexOf('Surfer/'))
+    surferVersion = surferVersion.substring(0, surferVersion.indexOf(' '))
+    let newUserAgent = userAgent.replace(surferVersion, 'Surfer/0.1.0')
+    let electronAgent = newUserAgent.substring(newUserAgent.indexOf('Electron/'))
+    electronAgent = electronAgent.substring(0, electronAgent.indexOf(' '))
+    newUserAgent = newUserAgent.replace(' ' + electronAgent, '')
 
     app.userAgentFallback = newUserAgent
 
@@ -35,15 +37,15 @@ app.on("ready", () => {
     // app.on("activate", function () {
     //     // On macOS it's common to re-create a window in the app when the
     //     // dock icon is clicked and there are no other windows open.
-    //     if (BrowserWindow.getAllWindows().length === 0) win = new Window(800, 600, false);
-    // });
-});
+    //     if (BrowserWindow.getAllWindows().length === 0) win = new Window(800, 600, false)
+    // })
+})
 
 // Uncomment on production.
 
 // app.on("window-all-closed", () => {
 //     if (process.platform !== "darwin") {
-//         app.quit();
+//         app.quit()
 //     }
-// });
+// })
 

@@ -1,10 +1,10 @@
 const backButton = <HTMLButtonElement>document.getElementById('backButton')
 const forwardButton = <HTMLButtonElement>document.getElementById('forwardButton')
 const refreshButton = document.getElementById('refreshButton')
-const settingsButton = document.getElementById('settingsButton')
+const lockButton = document.getElementById('lockButton')
 const searchBar = <HTMLInputElement>document.getElementById('searchBar')
 const titleBar = document.getElementById('tabBar')
-const nonDoubleClickableElements = document.querySelectorAll('.barButton, #searchBar');
+const nonDoubleClickableElements = document.querySelectorAll('.barButton, #searchBar')
 
 document.documentElement.setAttribute('data-theme', 'light')
 
@@ -28,15 +28,23 @@ refreshButton.addEventListener('click', () => {
     window.api.refreshButtonPressed()
 })
 
-settingsButton.addEventListener('click', () => {
-    window.api.settingsButtonPressed()
+let locked = false
+lockButton.addEventListener('click', () => {
+    window.api.lockButtonPressed()
+    if (!locked) {
+        lockButton.innerHTML = '&#128274'
+        locked = true
+    } else {
+        lockButton.innerHTML = '&#128275'
+        locked = false
+    }
 })
 
-window.api.handleCanGoBack((_ev: any, canGoBack: boolean) => {
+window.api.handleCanGoBack((_ev: Event, canGoBack: boolean) => {
     backButton.disabled = !canGoBack
 })
 
-window.api.handleCanGoForward((_ev: any, canGoForward: boolean) => {
+window.api.handleCanGoForward((_ev: Event, canGoForward: boolean) => {
     forwardButton.disabled = !canGoForward
 })
 
@@ -44,7 +52,7 @@ searchBar.addEventListener('keyup' , (event) => {
     //key code for enter
     if (event.key === 'Enter') {
         window.api.searchBarQueryEntered(searchBar.value)
-        event.preventDefault();
+        event.preventDefault()
         searchBar.blur()
     }
 })
@@ -64,14 +72,14 @@ searchBar.addEventListener('blur', () => {
 
 let searchBarText = ''
 let searchBarURL = ''
-window.api.handleSetSearchBar((_ev: any, text: string) => {
+window.api.handleSetSearchBar((_ev: Event, text: string) => {
     searchBarText = text
     if (!searchBarFocused) {
         searchBar.value = text
     }
 })
 
-window.api.handleSetSearchBarURL((_ev: any, url: string) => {
+window.api.handleSetSearchBarURL((_ev: Event, url: string) => {
     searchBarURL = url
     if (searchBarFocused) {
         searchBar.value = url

@@ -2,7 +2,7 @@ import { BrowserWindow, ipcMain, systemPreferences } from "electron"
 import * as path from "path"
 
 export class Window {
-    win: BrowserWindow;
+    win: BrowserWindow
 
     constructor(width: number, height: number, devTools: boolean) {
         this.win = new BrowserWindow({
@@ -15,23 +15,23 @@ export class Window {
             },
             titleBarStyle: "hiddenInset",
             backgroundColor: "#dadada",
-        });
+        })
         
-        this.win.loadFile(path.join(__dirname, "../pages/index.html"));
+        this.win.loadFile(path.join(__dirname, "../pages/index.html"))
         
         if (devTools) {
-            this.win.webContents.openDevTools({mode: 'undocked'});
+            this.win.webContents.openDevTools({mode: 'undocked'})
         }
 
         ipcMain.on('titleBarDoubleClicked', () => {
-            const doubleClickAction = systemPreferences.getUserDefault('AppleActionOnDoubleClick', 'string');
+            const doubleClickAction = systemPreferences.getUserDefault('AppleActionOnDoubleClick', 'string')
             if (doubleClickAction === 'Minimize') {
-                this.win.minimize();
+                this.win.minimize()
             } else if (doubleClickAction === 'Maximize') {
                 if (!this.win.isMaximized()) {
-                this.win.maximize();
+                this.win.maximize()
                 } else {
-                    this.win.unmaximize();
+                    this.win.unmaximize()
                 }
             }
         })

@@ -1,8 +1,10 @@
-import { BrowserView, BrowserWindow, ipcMain } from "electron"
+import { BrowserView, BrowserWindow, ipcMain, dialog } from "electron"
 import * as path from "path"
 
 export class View {
-    view: BrowserView;
+    view: BrowserView
+    lockedNav = false
+    lockedURL: string
     constructor(width: number, height: number, tabHeight: number, win: BrowserWindow ) {
         this.view = new BrowserView({
             webPreferences: {
@@ -17,15 +19,46 @@ export class View {
                 zoomFactor: 1.0,
                 navigateOnDragDrop: true
             }
-        });
+        })
         win.addBrowserView(this.view)
         this.view.setBounds({ x: 0, y: tabHeight, width: width, height: height - tabHeight })
         this.view.setAutoResize({width: true, height: true})
         this.view.webContents.setVisualZoomLevelLimits(1, 3)
         // this.view.webContents.openDevTools()
-        
+
         this.view.webContents.loadURL('https://google.com/')
         let homePage = true
+        
+        ipcMain.on('lockButtonPressed', () => {
+            this.lockedNav = !this.lockedNav
+            this.lockedURL = this.view.webContents.getURL()
+            this.lockedURL = this.lockedURL.replaceAll('https://', '').replaceAll('http://', '').replaceAll('www.', '')
+            this.lockedURL = this.lockedURL.substring(0, this.lockedURL.indexOf('/'))
+        })
+        
+        this.view.webContents.on('will-navigate', (ev: Event, url: string) => {
+            if (this.lockedNav && !url.includes(this.lockedURL)) {
+                ev.preventDefault()
+            } else {
+                updateSearchBar(ev, url)
+            }
+        })
+
+        
+        this.view.webContents.on('will-prevent-unload', (event) => {
+            const choice = dialog.showMessageBoxSync({
+                type: 'question',
+              buttons: ['Stay', 'Leave'],
+              title: 'Do you want to leave this site?',
+              message: 'Changes that you made may not be saved.',
+              defaultId: 0,
+              cancelId: 1
+            })
+            const leave = (choice === 1)
+            if (leave) {
+              event.preventDefault()
+            }
+        })
         
         this.view.webContents.setWindowOpenHandler((details: any) => {
             // Do stuff: open a new tab, navigate current tab, etc.
@@ -47,7 +80,37 @@ export class View {
             this.view.setBounds({ x: 0, y: tabHeight, width: w, height: h - tabHeight })
         })
         
-        const updateSearchBar = (_ev: any, url: string) => {
+        this.view.webContents.on('did-navigate', (_ev: Event, url: string) => {
+            updateSearchBar(_ev, url)
+            win.webContents.send('canGoBack', this.view.webContents.canGoBack())
+            win.webContents.send('canGoForward', this.view.webContents.canGoForward())
+        })
+
+        this.view.webContents.once('did-finish-load', () => {
+            homePage = false
+        })
+        
+        // this.view.webContents.on('did-finish-load', () => {
+        //     this.view.webContents.setVisualZoomLevelLimits(1, 3)
+        // })
+
+        ipcMain.on('goBack', () => {
+            if (this.view.webContents.getURL().includes(this.lockedURL) || !this.lockedNav) {
+                this.view.webContents.goBack()
+            }
+        })
+
+        ipcMain.on('goForward', () => {
+            if (this.view.webContents.getURL().includes(this.lockedURL) || !this.lockedNav) {
+                this.view.webContents.goForward()
+            }
+        })
+
+        ipcMain.on('refreshPage', () => {
+            this.view.webContents.reload()
+        })
+
+        const updateSearchBar = (_ev: Event, url: string) => {
             if (homePage) {
                 return
             }
@@ -73,33 +136,6 @@ export class View {
             win.webContents.send('setSearchBar', text)
             win.webContents.send('setSearchBarURL', url)
         }
-        this.view.webContents.on('will-navigate', updateSearchBar)
-        this.view.webContents.on('did-navigate', (_ev: any, url: string) => {
-            updateSearchBar(_ev, url)
-            win.webContents.send('canGoBack', this.view.webContents.canGoBack())
-            win.webContents.send('canGoForward', this.view.webContents.canGoForward())
-        })
-        // this.view.webContents.on('did-finish-load', updateSearchBar)
-
-        this.view.webContents.once('did-finish-load', () => {
-            homePage = false
-        })
-        
-        this.view.webContents.on('did-finish-load', () => {
-            this.view.webContents.setVisualZoomLevelLimits(1, 3)
-        })
-
-        ipcMain.on('goBack', () => {
-            this.view.webContents.goBack()
-        })
-
-        ipcMain.on('goForward', () => {
-            this.view.webContents.goForward()
-        })
-
-        ipcMain.on('refreshPage', () => {
-            this.view.webContents.reload()
-        })
 
         ipcMain.on('searchBarQueryEntered', (_event, query) => {
             if (query.indexOf('https://') === 0 || query.indexOf('http://') === 0) {
