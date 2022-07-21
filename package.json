@@ -22,6 +22,6 @@
     "typescript": "^4.7.3"
   },
   "dependencies": {
-    "electron-manager": "^0.0.86"
+    "electron-manager": "^0.0.116"
   }
 }
